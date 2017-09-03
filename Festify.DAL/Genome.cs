@@ -1,9 +1,5 @@
 ﻿using Schemavolution.Specification;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Festify.DAL
 {
@@ -13,7 +9,25 @@ namespace Festify.DAL
         {
             var dbo = databaseSpecification.UseSchema("dbo");
 
-            
+            var speaker = DefineSpeaker(dbo);
+            var session = DefineSession(dbo, speaker);
+        }
+
+        private PrimaryKeySpecification DefineSpeaker(SchemaSpecification dbo)
+        {
+            return dbo.CreateEntity("Speaker", table =>
+            {
+                table.CreateStringColumn("UserName", 255);
+            });
+        }
+
+        private PrimaryKeySpecification DefineSession(SchemaSpecification dbo, PrimaryKeySpecification speaker)
+        {
+            return dbo.CreateEntity("Session", table =>
+            {
+                table.CreateForeignKey("Speaker", speaker);
+                table.CreateDateTime2Column("Timestamp");
+            });
         }
     }
 }
