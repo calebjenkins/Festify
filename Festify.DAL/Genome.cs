@@ -15,10 +15,17 @@ namespace Festify.DAL
 
         private PrimaryKeySpecification DefineSpeaker(SchemaSpecification dbo)
         {
-            return dbo.CreateEntity("Speaker", table =>
+            var speaker = dbo.CreateEntity("Speaker", table =>
             {
                 table.CreateStringColumn("UserName", 255);
             });
+
+            dbo.CreateMutableProperty("Speaker", "Name", speaker, table =>
+            {
+                table.CreateStringColumn("Name", 100);
+            });
+
+            return speaker;
         }
 
         private PrimaryKeySpecification DefineSession(SchemaSpecification dbo, PrimaryKeySpecification speaker)
