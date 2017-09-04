@@ -11,6 +11,8 @@ namespace Festify.DAL
 
             var speaker = DefineSpeaker(dbo);
             var session = DefineSession(dbo, speaker);
+            var conference = DefineConference(dbo);
+            DefineSubmissionWorkflow(dbo, session, conference);
         }
 
         private PrimaryKeySpecification DefineSpeaker(SchemaSpecification dbo)
@@ -54,6 +56,43 @@ namespace Festify.DAL
             });
 
             return session;
+        }
+
+        private PrimaryKeySpecification DefineConference(SchemaSpecification dbo)
+        {
+            var conference = dbo.CreateEntity("Conference", table =>
+            {
+                var guid = table.CreateGuidColumn("ConferenceGuid");
+                table.CreateUniqueIndex(guid);
+            });
+
+            return conference;
+        }
+
+        private static void DefineSubmissionWorkflow(SchemaSpecification dbo, PrimaryKeySpecification session, PrimaryKeySpecification conference)
+        {
+            var submission = dbo.CreateEntity("Submission", table =>
+            {
+                table.CreateForeignKey("Session", session);
+                table.CreateForeignKey("Conference", conference);
+                table.CreateDateTime2Column("Timestamp");
+            });
+
+            dbo.CreateEntity("SubmissionWithdrawl", table =>
+            {
+                table.CreateForeignKey("Submission", submission);
+            });
+
+            var acceptance = dbo.CreateEntity("Acceptance", table =>
+            {
+                table.CreateForeignKey("Submission", submission);
+                table.CreateDateTime2Column("Timestamp");
+            });
+
+            dbo.CreateEntity("AcceptanceWithdrawl", table =>
+            {
+                table.CreateForeignKey("Acceptance", acceptance);
+            });
         }
     }
 }
