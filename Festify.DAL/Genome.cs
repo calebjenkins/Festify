@@ -42,8 +42,9 @@ namespace Festify.DAL
         {
             var session = dbo.CreateEntity("Session", table =>
             {
-                table.CreateForeignKey(speaker);
-                table.CreateDateTime2Column("Timestamp");
+                var fk = table.CreateForeignKey(speaker);
+                var timestamp = table.CreateDateTime2Column("Timestamp");
+                table.CreateUniqueIndex(fk.Column, timestamp);
             });
 
             dbo.CreateMutableProperty(session, "Title", table =>
@@ -58,8 +59,9 @@ namespace Festify.DAL
 
             dbo.CreateEntity("SessionDeletion", table =>
             {
-                table.CreateForeignKey(session);
-                table.CreateDateTime2Column("Timestamp");
+                var fk = table.CreateForeignKey(session);
+                var timestamp = table.CreateDateTime2Column("Timestamp");
+                table.CreateUniqueIndex(fk.Column, timestamp);
             });
 
             return session;
@@ -80,25 +82,29 @@ namespace Festify.DAL
         {
             var submission = dbo.CreateEntity("Submission", table =>
             {
-                table.CreateForeignKey(session);
-                table.CreateForeignKey(conference);
-                table.CreateDateTime2Column("Timestamp");
+                var sessionFk = table.CreateForeignKey(session);
+                var conferenceFk = table.CreateForeignKey(conference);
+                var timestamp = table.CreateDateTime2Column("Timestamp");
+                table.CreateUniqueIndex(sessionFk.Column, conferenceFk.Column, timestamp);
             });
 
             dbo.CreateEntity("SubmissionWithdrawl", table =>
             {
-                table.CreateForeignKey(submission);
+                var fk = table.CreateForeignKey(submission);
+                table.CreateUniqueIndex(fk.Column);
             });
 
             var acceptance = dbo.CreateEntity("Acceptance", table =>
             {
-                table.CreateForeignKey(submission);
-                table.CreateDateTime2Column("Timestamp");
+                var fk = table.CreateForeignKey(submission);
+                var timestamp = table.CreateDateTime2Column("Timestamp");
+                table.CreateUniqueIndex(fk.Column, timestamp);
             });
 
             dbo.CreateEntity("AcceptanceWithdrawl", table =>
             {
-                table.CreateForeignKey(acceptance);
+                var fk = table.CreateForeignKey(acceptance);
+                table.CreateUniqueIndex(fk.Column);
             });
 
             return acceptance;
