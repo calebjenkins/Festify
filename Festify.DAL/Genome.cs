@@ -23,11 +23,19 @@ namespace Festify.DAL
 
         private PrimaryKeySpecification DefineSession(SchemaSpecification dbo, PrimaryKeySpecification speaker)
         {
-            return dbo.CreateEntity("Session", table =>
+            var session = dbo.CreateEntity("Session", table =>
             {
                 table.CreateForeignKey("Speaker", speaker);
                 table.CreateDateTime2Column("Timestamp");
             });
+
+            dbo.CreateEntity("SessionDeletion", table =>
+            {
+                table.CreateForeignKey("Session", session);
+                table.CreateDateTime2Column("Timestamp");
+            });
+
+            return session;
         }
     }
 }
