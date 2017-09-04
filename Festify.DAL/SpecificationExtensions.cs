@@ -5,20 +5,33 @@ namespace Festify.DAL
 {
     public static class SpecificationExtensions
     {
-        public static PrimaryKeySpecification CreateEntity(this SchemaSpecification dbo, string tableName,
+        public static Entity CreateEntity(this SchemaSpecification dbo, string tableName,
             Action<TableSpecification> definitions)
         {
             var table = dbo.CreateTable(tableName);
             var id = table.CreateIdentityColumn($"{tableName}Id");
             definitions(table);
-            return table.CreatePrimaryKey(id);
+            var pk = table.CreatePrimaryKey(id);
+            return new Entity
+            {
+                Name = tableName,
+                Table = table,
+                IdColumn = id,
+                PrimaryKey = pk
+            };
         }
 
-        public static ForeignKeySpecification CreateForeignKey(this TableSpecification table, string tableName, PrimaryKeySpecification pk)
+        public static ForeignKey CreateForeignKey(this TableSpecification table, Entity entity)
         {
-            var fkid = table.CreateIntColumn($"{tableName}Id");
+            var fkid = table.CreateIntColumn($"{entity.Name}Id");
             var index = table.CreateIndex(fkid);
-            return index.CreateForeignKey(pk);
+            var fk = index.CreateForeignKey(entity.PrimaryKey);
+            return new ForeignKey
+            {
+                Column = fkid,
+                Index = index,
+                Specification = fk
+            };
         }
     }
 }

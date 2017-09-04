@@ -12,10 +12,17 @@ namespace Festify.DAL
             var speaker = DefineSpeaker(dbo);
             var session = DefineSession(dbo, speaker);
             var conference = DefineConference(dbo);
-            DefineSubmissionWorkflow(dbo, session, conference);
+            var acceptance = DefineSubmissionWorkflow(dbo, session, conference);
+
+            dbo.CreateEntity("Room", table =>
+            {
+                var conferenceId = table.CreateForeignKey(conference);
+                var roomNumber = table.CreateStringColumn("RoomNumber", 50);
+                table.CreateUniqueIndex(roomNumber, conferenceId.Column);
+            });
         }
 
-        private PrimaryKeySpecification DefineSpeaker(SchemaSpecification dbo)
+        private Entity DefineSpeaker(SchemaSpecification dbo)
         {
             var speaker = dbo.CreateEntity("Speaker", table =>
             {
@@ -23,7 +30,7 @@ namespace Festify.DAL
                 table.CreateUniqueIndex(userName);
             });
 
-            dbo.CreateMutableProperty("Speaker", "Name", speaker, table =>
+            dbo.CreateMutableProperty(speaker, "Name", table =>
             {
                 table.CreateStringColumn("Name", 100);
             });
@@ -31,34 +38,34 @@ namespace Festify.DAL
             return speaker;
         }
 
-        private PrimaryKeySpecification DefineSession(SchemaSpecification dbo, PrimaryKeySpecification speaker)
+        private Entity DefineSession(SchemaSpecification dbo, Entity speaker)
         {
             var session = dbo.CreateEntity("Session", table =>
             {
-                table.CreateForeignKey("Speaker", speaker);
+                table.CreateForeignKey(speaker);
                 table.CreateDateTime2Column("Timestamp");
             });
 
-            dbo.CreateMutableProperty("Session", "Title", session, table =>
+            dbo.CreateMutableProperty(session, "Title", table =>
             {
                 table.CreateStringColumn("Title", 255);
             });
 
-            dbo.CreateMutableProperty("Session", "Abstract", session, table =>
+            dbo.CreateMutableProperty(session, "Abstract", table =>
             {
                 table.CreateStringColumn("Abstract", 2000);
             });
 
             dbo.CreateEntity("SessionDeletion", table =>
             {
-                table.CreateForeignKey("Session", session);
+                table.CreateForeignKey(session);
                 table.CreateDateTime2Column("Timestamp");
             });
 
             return session;
         }
 
-        private PrimaryKeySpecification DefineConference(SchemaSpecification dbo)
+        private Entity DefineConference(SchemaSpecification dbo)
         {
             var conference = dbo.CreateEntity("Conference", table =>
             {
@@ -69,30 +76,32 @@ namespace Festify.DAL
             return conference;
         }
 
-        private static void DefineSubmissionWorkflow(SchemaSpecification dbo, PrimaryKeySpecification session, PrimaryKeySpecification conference)
+        private static Entity DefineSubmissionWorkflow(SchemaSpecification dbo, Entity session, Entity conference)
         {
             var submission = dbo.CreateEntity("Submission", table =>
             {
-                table.CreateForeignKey("Session", session);
-                table.CreateForeignKey("Conference", conference);
+                table.CreateForeignKey(session);
+                table.CreateForeignKey(conference);
                 table.CreateDateTime2Column("Timestamp");
             });
 
             dbo.CreateEntity("SubmissionWithdrawl", table =>
             {
-                table.CreateForeignKey("Submission", submission);
+                table.CreateForeignKey(submission);
             });
 
             var acceptance = dbo.CreateEntity("Acceptance", table =>
             {
-                table.CreateForeignKey("Submission", submission);
+                table.CreateForeignKey(submission);
                 table.CreateDateTime2Column("Timestamp");
             });
 
             dbo.CreateEntity("AcceptanceWithdrawl", table =>
             {
-                table.CreateForeignKey("Acceptance", acceptance);
+                table.CreateForeignKey(acceptance);
             });
+
+            return acceptance;
         }
     }
 }

@@ -129,6 +129,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entity.cs" />
+    <Compile Include="ForeignKey.cs" />
     <Compile Include="Genome.cs" />
     <Compile Include="HistoricalSpecificationExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
