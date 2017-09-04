@@ -36,6 +36,16 @@ namespace Festify.DAL
                 table.CreateDateTime2Column("Timestamp");
             });
 
+            dbo.CreateMutableProperty("Session", "Title", session, table =>
+            {
+                table.CreateStringColumn("Title", 255);
+            });
+
+            dbo.CreateMutableProperty("Session", "Abstract", session, table =>
+            {
+                table.CreateStringColumn("Abstract", 2000);
+            });
+
             dbo.CreateEntity("SessionDeletion", table =>
             {
                 table.CreateForeignKey("Session", session);
