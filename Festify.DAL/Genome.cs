@@ -17,7 +17,8 @@ namespace Festify.DAL
         {
             var speaker = dbo.CreateEntity("Speaker", table =>
             {
-                table.CreateStringColumn("UserName", 255);
+                var userName = table.CreateStringColumn("UserName", 255);
+                table.CreateUniqueIndex(userName);
             });
 
             dbo.CreateMutableProperty("Speaker", "Name", speaker, table =>
