@@ -13,13 +13,7 @@ namespace Festify.DAL
             var session = DefineSession(dbo, speaker);
             var conference = DefineConference(dbo);
             var acceptance = DefineSubmissionWorkflow(dbo, session, conference);
-
-            dbo.CreateEntity("Room", table =>
-            {
-                var conferenceId = table.CreateForeignKey(conference);
-                var roomNumber = table.CreateStringColumn("RoomNumber", 50);
-                table.CreateUniqueIndex(roomNumber, conferenceId.Column);
-            });
+            DefineSchedule(dbo, conference, acceptance);
         }
 
         private Entity DefineSpeaker(SchemaSpecification dbo)
@@ -78,7 +72,7 @@ namespace Festify.DAL
             return conference;
         }
 
-        private static Entity DefineSubmissionWorkflow(SchemaSpecification dbo, Entity session, Entity conference)
+        private Entity DefineSubmissionWorkflow(SchemaSpecification dbo, Entity session, Entity conference)
         {
             var submission = dbo.CreateEntity("Submission", table =>
             {
@@ -108,6 +102,30 @@ namespace Festify.DAL
             });
 
             return acceptance;
+        }
+
+        private void DefineSchedule(SchemaSpecification dbo, Entity conference, Entity acceptance)
+        {
+            var room = dbo.CreateEntity("Room", table =>
+            {
+                var conferenceId = table.CreateForeignKey(conference);
+                var roomNumber = table.CreateStringColumn("RoomNumber", 50);
+                table.CreateUniqueIndex(conferenceId.Column, roomNumber);
+            });
+
+            var timeSlot = dbo.CreateEntity("TimeSlot", table =>
+            {
+                var conferenceId = table.CreateForeignKey(conference);
+                var date = table.CreateDateColumn("Date");
+                var time = table.CreateTimeColumn("Time", fractionalSeconds: 0);
+                table.CreateUniqueIndex(conferenceId.Column, date, time);
+            });
+
+            dbo.CreateMutableProperty(acceptance, "Schedule", table =>
+            {
+                table.CreateForeignKey(room);
+                table.CreateForeignKey(timeSlot);
+            });
         }
     }
 }

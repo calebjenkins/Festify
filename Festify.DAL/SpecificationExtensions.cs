@@ -5,10 +5,10 @@ namespace Festify.DAL
 {
     public static class SpecificationExtensions
     {
-        public static Entity CreateEntity(this SchemaSpecification dbo, string tableName,
+        public static Entity CreateEntity(this SchemaSpecification schema, string tableName,
             Action<TableSpecification> definitions)
         {
-            var table = dbo.CreateTable(tableName);
+            var table = schema.CreateTable(tableName);
             var id = table.CreateIdentityColumn($"{tableName}Id");
             definitions(table);
             var pk = table.CreatePrimaryKey(id);
