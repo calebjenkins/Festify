@@ -23,7 +23,7 @@ namespace Festify.DAL.Speakers
             var speaker = _repository.Find(new SpeakerByUserName(userName));
             if (speaker == null)
             {
-                speaker = _repository.Context.Add(new Speaker(userName));
+                speaker = _repository.Context.Add(Speaker.Create(userName));
             }
             return speaker;
         }
