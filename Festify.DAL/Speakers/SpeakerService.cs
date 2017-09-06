@@ -30,7 +30,7 @@ namespace Festify.DAL.Speakers
 
         public Speaker GetSpeakerByUserName(string userName)
         {
-            throw new NotImplementedException();
+            return _repository.Find(new SpeakerByUserName(userName));
         }
     }
 }
