@@ -21,6 +21,7 @@ namespace Festify.Web.Controllers
     public class SpeakerController : ApiController
     {
         private readonly SpeakerService _speakerService;
+        private readonly IUnitOfWork _unitOfWork;
 
         public SpeakerController()
         {
@@ -28,6 +29,7 @@ namespace Festify.Web.Controllers
             IMappingConfiguration mapping = new FestifyMappingConfiguration();
             IDataContext context = new DataContext(connectionString, mapping);
             IRepository repository = new Repository(context);
+            _unitOfWork = context;
             _speakerService = new SpeakerService(repository);
         }
 
@@ -38,14 +40,25 @@ namespace Festify.Web.Controllers
             return Ok(speakers.Select(CreateRepresentation));
         }
 
-        [Route(Name = "GetSpeaker")]
+        [Route("{userName}", Name = "GetSpeaker")]
         public IHttpActionResult GetSpeaker(string userName)
         {
-            Speaker speaker = _speakerService.GetSpeakerByUserName(userName);
+            var speaker = _speakerService.GetSpeakerByUserName(userName);
             if (speaker == null)
                 return NotFound();
             else
                 return Ok(CreateRepresentation(speaker));
+        }
+
+        [Route(Name = "CreateSpeaker")]
+        public IHttpActionResult CreateSpeaker(SpeakerRepresentation representation)
+        {
+            var speaker = _speakerService.AddSpeaker(representation.userName);
+            var created = CreateRepresentation(speaker);
+            _unitOfWork.Commit();
+            return Created(
+                created._links["self"].href,
+                created);
         }
 
         private SpeakerRepresentation CreateRepresentation(Speaker speaker)
@@ -53,7 +66,7 @@ namespace Festify.Web.Controllers
             var representation = SpeakerRepresentation.FromEntity(speaker);
             representation._links = new Dictionary<string, LinkReference>
             {
-                ["Self"] = new LinkReference
+                ["self"] = new LinkReference
                 {
                     href = Url.GetSpeaker(speaker.UserName)
                 }
