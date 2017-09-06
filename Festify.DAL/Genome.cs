@@ -51,11 +51,17 @@ namespace Festify.DAL
                 table.CreateStringColumn("Abstract", 2000);
             });
 
-            dbo.CreateEntity("SessionDeletion", table =>
+            var deletion = dbo.CreateEntity("SessionDeletion", table =>
             {
                 var fk = table.CreateForeignKey(session);
                 var timestamp = table.CreateDateTime2Column("Timestamp");
                 table.CreateUniqueIndex(fk.Column, timestamp);
+            });
+
+            dbo.CreateEntity("SessionRestoration", table =>
+            {
+                var fk = table.CreateForeignKey(deletion);
+                table.CreateUniqueIndex(fk.Column);
             });
 
             return session;
