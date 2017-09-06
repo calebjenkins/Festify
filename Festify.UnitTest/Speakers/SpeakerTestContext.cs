@@ -20,7 +20,7 @@ namespace Festify.UnitTest.Speakers
 
         public IEnumerable<Speaker> WhenGetAllSpeakers()
         {
-            return _repository.Find(new AllSpeakers());
+            return _speakerService.GetAllSpeakers();
         }
 
         public void WhenAddSpeaker(string userName)
