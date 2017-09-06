@@ -18,5 +18,14 @@ namespace Festify.UnitTest.Speakers
             var speakers = context.WhenGetAllSpeakers();
             speakers.Count().Should().Be(0);
         }
+
+        [Fact]
+        public void WhenAddSpeaker_ThenOneSpeaker()
+        {
+            var context = SpeakerTestContext.GivenSpeakerRepository();
+            context.WhenAddSpeaker(userName: "michaellperry");
+            var speakers = context.WhenGetAllSpeakers();
+            speakers.Count().Should().Be(1);
+        }
     }
 }

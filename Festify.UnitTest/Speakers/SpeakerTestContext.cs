@@ -22,6 +22,12 @@ namespace Festify.UnitTest.Speakers
             return _repository.Find(new AllSpeakers());
         }
 
+        public void WhenAddSpeaker(string userName)
+        {
+            _context.Add(new Speaker(userName));
+            _context.Commit();
+        }
+
         public static SpeakerTestContext GivenSpeakerRepository()
         {
             return new SpeakerTestContext();
