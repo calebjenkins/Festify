@@ -153,6 +153,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Speakers\AllSpeakers.cs" />
     <Compile Include="Speakers\Speaker.cs" />
+    <Compile Include="Speakers\SpeakerByUserName.cs" />
+    <Compile Include="Speakers\SpeakerService.cs" />
     <Compile Include="SpecificationExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

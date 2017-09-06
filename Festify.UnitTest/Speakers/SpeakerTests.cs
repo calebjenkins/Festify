@@ -1,10 +1,5 @@
-﻿using Festify.DAL.Speakers;
-using FluentAssertions;
-using System;
-using System.Collections.Generic;
+﻿using FluentAssertions;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Festify.UnitTest.Speakers
@@ -23,6 +18,16 @@ namespace Festify.UnitTest.Speakers
         public void WhenAddSpeaker_ThenOneSpeaker()
         {
             var context = SpeakerTestContext.GivenSpeakerRepository();
+            context.WhenAddSpeaker(userName: "michaellperry");
+            var speakers = context.WhenGetAllSpeakers();
+            speakers.Count().Should().Be(1);
+        }
+
+        [Fact]
+        public void WhenAddSpeakerTwice_ThenStillOneSpeaker()
+        {
+            var context = SpeakerTestContext.GivenSpeakerRepository();
+            context.WhenAddSpeaker(userName: "michaellperry");
             context.WhenAddSpeaker(userName: "michaellperry");
             var speakers = context.WhenGetAllSpeakers();
             speakers.Count().Should().Be(1);

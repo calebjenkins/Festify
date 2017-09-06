@@ -1,7 +1,6 @@
 ﻿using Festify.DAL.Speakers;
 using Highway.Data;
 using Highway.Data.Contexts;
-using System;
 using System.Collections.Generic;
 
 namespace Festify.UnitTest.Speakers
@@ -10,11 +9,13 @@ namespace Festify.UnitTest.Speakers
     {
         private readonly InMemoryDataContext _context;
         private readonly Repository _repository;
+        private readonly SpeakerService _speakerService;
 
         public SpeakerTestContext()
         {
             _context = new InMemoryDataContext();
             _repository = new Repository(_context);
+            _speakerService = new SpeakerService(_repository);
         }
 
         public IEnumerable<Speaker> WhenGetAllSpeakers()
@@ -24,7 +25,7 @@ namespace Festify.UnitTest.Speakers
 
         public void WhenAddSpeaker(string userName)
         {
-            _context.Add(new Speaker(userName));
+            _speakerService.AddSpeaker(userName);
             _context.Commit();
         }
 
