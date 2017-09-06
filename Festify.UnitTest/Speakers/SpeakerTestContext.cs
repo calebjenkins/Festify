@@ -7,15 +7,15 @@ namespace Festify.UnitTest.Speakers
 {
     public class SpeakerTestContext
     {
-        private readonly InMemoryDataContext _context;
-        private readonly Repository _repository;
         private readonly SpeakerService _speakerService;
+        private readonly IUnitOfWork _unitOfWork;
 
         public SpeakerTestContext()
         {
-            _context = new InMemoryDataContext();
-            _repository = new Repository(_context);
-            _speakerService = new SpeakerService(_repository);
+            var context = new InMemoryDataContext();
+            var repository = new Repository(context);
+            _speakerService = new SpeakerService(repository);
+            _unitOfWork = context;
         }
 
         public IEnumerable<Speaker> WhenGetAllSpeakers()
@@ -26,10 +26,10 @@ namespace Festify.UnitTest.Speakers
         public void WhenAddSpeaker(string userName)
         {
             _speakerService.AddSpeaker(userName);
-            _context.Commit();
+            _unitOfWork.Commit();
         }
 
-        public static SpeakerTestContext GivenSpeakerRepository()
+        public static SpeakerTestContext GivenSpeakerService()
         {
             return new SpeakerTestContext();
         }

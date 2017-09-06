@@ -54,8 +54,9 @@ namespace Festify.Web.Controllers
         public IHttpActionResult CreateSpeaker(SpeakerRepresentation representation)
         {
             var speaker = _speakerService.AddSpeaker(representation.userName);
-            var created = CreateRepresentation(speaker);
             _unitOfWork.Commit();
+
+            var created = CreateRepresentation(speaker);
             return Created(
                 created._links["self"].href,
                 created);

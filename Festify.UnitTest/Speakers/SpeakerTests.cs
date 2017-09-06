@@ -9,7 +9,7 @@ namespace Festify.UnitTest.Speakers
         [Fact]
         public void InitiallyNoSpeakers()
         {
-            var context = SpeakerTestContext.GivenSpeakerRepository();
+            var context = SpeakerTestContext.GivenSpeakerService();
             var speakers = context.WhenGetAllSpeakers();
             speakers.Count().Should().Be(0);
         }
@@ -17,7 +17,7 @@ namespace Festify.UnitTest.Speakers
         [Fact]
         public void WhenAddSpeaker_ThenOneSpeaker()
         {
-            var context = SpeakerTestContext.GivenSpeakerRepository();
+            var context = SpeakerTestContext.GivenSpeakerService();
             context.WhenAddSpeaker(userName: "michaellperry");
             var speakers = context.WhenGetAllSpeakers();
             speakers.Count().Should().Be(1);
@@ -26,7 +26,7 @@ namespace Festify.UnitTest.Speakers
         [Fact]
         public void WhenAddSpeakerTwice_ThenStillOneSpeaker()
         {
-            var context = SpeakerTestContext.GivenSpeakerRepository();
+            var context = SpeakerTestContext.GivenSpeakerService();
             context.WhenAddSpeaker(userName: "michaellperry");
             context.WhenAddSpeaker(userName: "michaellperry");
             var speakers = context.WhenGetAllSpeakers();
