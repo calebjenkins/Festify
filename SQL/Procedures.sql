@@ -59,3 +59,31 @@ AS
 	  VALUES (@SpeakerId, @Name)
 GO
 
+DROP PROCEDURE IF EXISTS SetSessionTitle
+GO
+
+CREATE PROCEDURE SetSessionTitle(
+  @UserName NVARCHAR(255),
+  @Timestamp DATETIME2,
+  @Title NVARCHAR(255))
+AS
+  DECLARE @SpeakerId INT
+  DECLARE @SessionId INT
+
+  SELECT @SpeakerId = SpeakerId
+  FROM Speaker
+  WHERE UserName = @UserName
+
+  SELECT @SessionId = SessionId
+  FROM [Session]
+  WHERE SpeakerId = @SpeakerId
+    AND [Timestamp] = @Timestamp
+
+  IF NOT EXISTS (
+    SELECT SessionTitleId
+	FROM SessionTitle
+	WHERE SessionId = @SessionId
+	AND Title = @Title)
+	  INSERT INTO SessionTitle (SessionId, Title)
+	  VALUES (@SessionId, @Title)
+GO
